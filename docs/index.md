@@ -1,29 +1,27 @@
-## User documentation
+## 用户文档
 
-**[Getting started and key concepts](key_concepts.md)**: The central concepts in Iodide, and how to get started.
+**[入门和核心概念](key_concepts.md)**：`Iodide` 的核心知识，及如何使用它。
 
-**[JSMD format](jsmd.md)**: The simple file format used to write Iodide notebooks.
+**[JSMD 格式](jsmd.md)**：表示一个被叫做`notebook`的`Iodide`文件的格式。
 
-**[Language plugins](language_plugins.md)**: Support for programming languages
-other than JavaScript.
+**[语言 plugins](language_plugins.md)**：不仅支持`JavaScript`，还可以通过引入相应地开发语言插件支持其他的开发语言。
 
-**[API docs](api.md)**: Documents special JavaScript functions available to
-Iodide notebooks.
+**[` API 文档 `](api.md)**： 文档介绍了可用于`Iodide`的`notebook`中的`JavaScript` 函数。
 
-**[Common workflows and tips](workflows.md)**: Pointers for accomplishing common tasks in Iodide.
+**[` 工作流程和知识点 `](workflows.md)**: `Iodide`完成的一系列任务。
 
-**[Server administration](server-admin.md)**: Information on common server administration tasks.
+**[` 服务端管理 `](server-admin.md)**: 服务端管理任务。
 
-## Developer documentation
+## 开发者文档
 
-**[Contributing](contributing.md)**: Information about contributing to Iodide.
+**[` 贡献 `](contributing.md)**： `Iodide`的开发者贡献须知。
 
-**[Design principles](design-principles.md)**: Core design principles for Iodide.
+**[` 设计规范 `](design-principles.md)**: `Iodide`的核心设计规范。
 
-**[Local development](local-dev.md)**: Setting up a local development environment.
+**[` 本地环境 `](local-dev.md)**：配置一个本地开发环境。
 
-**[Making a new release](making-a-new-release.md)**: Step-by-step instructions for making a new Iodide release.
+**[` 发布 `](making-a-new-release.md)**：一步步的介绍如何发布`Iodide`。
 
-## Policies and terms
+## 隐私和服务
 
-**[Privacy policy, terms, and account management](policies.md)**: Policies governing the use of Iodide.io.
+**[隐私政策、服务条款和账户管理](policies.md)**：使用`Iodide.io`需要了解的信息。
