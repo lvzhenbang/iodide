@@ -1,77 +1,67 @@
-# JSMD format 
+# JSMD 格式
 
-## What is JSMD?
+## JSMD 是什么？
 
-JSMD, short for JavaScript MarkDown, is the file format that
-Iodide notebooks are written in. It provides a way to interleave the narrative
-parts of your notebook, written in Markdown, with the computational parts, written
-in JavaScript, or through the use of language plugins, in other languages such
-as Python or OCaml.
+JSMD是`JavaScript MarkDown`的简称，是一个Iodide的`notebook`文件格式。. 它提供了一种方法，让你的`notebook`中既可以写`Markdown`，也可以写入`Javascript`，也可以通过使用其他语言的插件来使用其它语言，如：Python 或 OCaml。
 
-This format is inspired by MATLAB "cell mode" and [`.Rmd`](https://rmarkdown.rstudio.com/r_notebooks.html)
-(RMarkdown notebook) files. It is simply a collection of contents in different languages,
-separated by lines that start with `%%` and indicate the language of the chunk
-below.
+这种文件格式的灵感来自于`MATLAB`的 "cell mode" 和 [`.Rmd`](https://rmarkdown.rstudio.com/r_notebooks.html)
+(RMarkdown notebook) 文件。它是一个不同语言内容的集合。通过 `%%` 来区分，并且知识该内容模块所使用的语言。
 
-Representing Iodide notebooks with a flat text file makes them easy for both humans and computers to
-understand. For example, it works out of the box with standard software
-development tools like ``diff`` and GitHub pull requests.
+Iodide的`notebook`是一个纯文本，它方便了人类和计算机的理解。 它可以使用开箱即用的``dif`和Github的`pull reqeuest`，来提交新内容。
 
-## JSMD syntax and usage
+## JSMD 的语法和用法
 
-As we said above, a JSMD file is just a plain text file with text blocks representing various languages and other evaluation directives, and delimited by lines starting with `%%`.
+正如上面所说的那样，一个`JSMD`文件就是一个纯文本文件，通过每行开始的`%%`区分所使用的不同语言。
 
-A few things to note about JSMD:
+对于`JSMD`，你需要注意以下几点儿：
 
-* Iodide natively supports the following JSMD chunk types (described in more detail below):
-    * `%% js` for JavaScript source code
-    * `%% py` for Python source code
-    * `%% md` for Markdown
-    * `%% css` for CSS styles
-    * `%% fetch` for retrieving resources
-    * `%% plugin` for Iodide plugins
-    * `%% raw` for raw text (which Iodide will ignore)
-* A chunk started with just `%%` but no explicit chunk type will inherit its type of the chunk above it.
-* Any chunk with an unknown type will be ignored by Iodide.
-* Any blank lines above the first chunk specifier will be ignored.
-* Changes to `md` and `css` chunk are immediately applied to your Iodide Report; changes to all other chunk types must be evaluated to take effect (to evaluate, use keyboard shortcuts `ctrl+enter`/`shift+enter` or the play button in the toolbar while your cursor is within the chunk).
-* Chunks delimiters can have one or more flags that modify their behavior, for example starting a chunk with `%% js skipRunAll` will prevent that chunk from being run when you press the "Run Full Notebook" button or when the notebook is loaded in report view (which triggers a evaluation of the whole notebook). If a modifier flag is included, the chunk delimiter must include an explicit chunk type. See below for the list of available chunk modifier flags.
+* Iodide的`JSMD`支持如下的`chunk`类型：
+    * `%% js` 代表Javascript
+    * `%% py` 代表 Python
+    * `%% md` 代表 Markdown
+    * `%% css` 代表 CSS 样式
+    * `%% fetch` 代表可以从服务器获取的资源
+    * `%% plugin` 代表`Iodide`插件
+    * `%% raw` 代表`Iodide`将忽视的内容
+* 如果一个块开始处只有' %% '，但没有明确的指定`chunk`的类型，那么它将继承它上面`chunk`的类型。
+* 任可带有`Iodide`不能识别的类型，都将会被忽略。
+* 每一个`chunk`上面的空白行都将被忽略。
+* `md` 和 `css` 块的任何改变都将会被立即运用到`Iodide`的`报表`。而其它块的改变需要先通过计算，然后才能显示在`报表`中，可以使用 `ctrl+enter`/`shift+enter` 快捷键来完成`计算`，也可以使用工具栏中的按钮来触发`计算`。
+* 可以为模块`分割符`添加一个或者多个`标识符`来修改它们的行为。例如： `%% js skipRunAll` 将阻止当前模块的运行。如果一个模块包含`修饰符`，那么该模块的`分隔符`中必须包含模块的`类型`标志。
 
-A brief example will help to illustrate a few of the details and nuances.
+下面的例子列举了可用的模块修饰符，它说明了这些修饰符的用途，以及它们之间的细微差别：
 
 ```
-this stuff up at the top of your jsmd will be ignored
+// 位于顶部的这些内容将被忽略
 
 %% md
-# this is markdown
-_and it will be rendered as such whenever you change it!_
-
+# 这是 markdown
+这部分的内容，只要你改变它，它就会被渲染
 %% js
 function bigSlowFunction(x){ ... }
 
 %% 
-// since the type of this chunk is not specified, it will take type
-// "js" from the chunk above.
+// 因为这个`块`的类型未指定，所以它将继承上面模块的`JS`类型
 
-// delimiting chunks like this can be useful if you want to control
-// when you run a certain snippet of code (for example if it's very slow)
+// 当你运行某个代码片段时(例如，如果它非常慢)，你可以使用这样的`块`分割方式
+// 来调整模块
 let sum = 0
 for (var i = 0; i < 1e10; i++) {
   sum = sum + bigSlowFunction(x)
 }
 
 %% qwerty
-this chunk type is not known by Iodide, so this content will be ignored
+这是一种`Iodide`无法识别的块类型，所以它将会被忽略。
 
 ```
 
-## JSMD chunk types
+## JSMD 的`块`种类
 
 ### Markdown (`%% md`)
 
-Markdown chunks allow you to enter [Markdown](https://commonmark.org/help/) ([full spec](https://spec.commonmark.org/)), which is immediately rendered in your report preview.
+`Markdown` 允许你适用[` Markdown 语法 `](https://commonmark.org/help/) ([full spec](https://spec.commonmark.org/))书写代码。它直接在你的`报表`预览中显示。
 
-Markdown is a superset of HTML, which means that you can enter HTML directly within a Markdown chunk. This is particularly useful for creating DOM elements that you can target with your scripts later on, like in the following example,:
+`Markdown`支持`HTML`语法，也就是说，你可以在`Markdown`的`块`中直接使用`HTML`代码。稍后，你可以在你的脚本中操作它。如下所示：
 
 ```
 % md
@@ -84,9 +74,11 @@ A paragraph introducing the topic.
 A paragraph describing plot-1.
 ```
 
-We can then manipulate `div#plot-1` using standard browser APIs, for example, adding a [d3](https://d3js.org/) or [plotly](https://plot.ly/javascript/) plot within that `div`. _Note, however, that any programmatic changes you make to DOM elements placed within a Markdown chunk will be overwritten if you update that Markdown chunk; in such a case you'll need to re-evaluate the code chunk responsible for the DOM manipulation._
+我们可以使用标准的浏览器API，通过操作 `div#plot-1` ，来操作元素。如：在 `div` 内添加一个 [d3](https://d3js.org/) 或 [plotly](https://plot.ly/javascript/)。
 
-Markdown chunks also support [LaTeX](https://en.wikibooks.org/wiki/LaTeX/Mathematics) for typesetting mathematics. LaTeX expression may be placed inline when written between single dollar signs (`$...$`), or in their own block when set between double dollar signs (`$$...$$`).
+注： 但是，如果更新了标记块，则对放置在标记块内的DOM元素所做的任何编程更改都将被覆盖；在这种情况下，你需要重新评估负责DOM操作的代码块。
+
+Markdown块还支持[LaTeX](https://en.wikibooks.org/wiki/LaTeX/Mathematics)用于排版数学。LaTeX表达式可以放在单美元符号之间的行内(` $…$ `)，或者放在双美元符号之间的块中(` $$…$$ `)。
 
 ```
 # Derivatives
@@ -99,28 +91,30 @@ $$\lim_{h\to 0} \frac{f(x+h)-f(x)}{h}.$$
 
 ### JavaScript (`%% js`)
 
-JavaScript chunks allow you to input JavaScript that is you can execute within your browser. The code runs within the scope of your Report (in a separate [iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) from the code editor), and allows you to use the full set of [Web APIs](https://developer.mozilla.org/en-US/docs/Web/API) available in your browser.
+JavaScript块允许你输入`Javascript`代码，并且可以在浏览器中执行。代码运行在`报表`的范围内(在代码编辑器中的一个单独的[iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe)，并允许你使用浏览器中所有的[Web API](https://developer.mozilla.org/en-US/docs/Web/API)。
 
-The last value returned by your code chunk is displayed in the Iodide Console.
+块中代码执行后，返回的最后一个值是显示在Iodide控制台中。
 
 ### CSS (`%% css`)
 
-CSS chunks allow you to input [CSS styles](https://developer.mozilla.org/en-US/docs/Web/CSS) to change the appearance of your report. Like Markdown chunks, these chunks are evaluated while you type, allowing you  get real time feedback as you make changes to your styles.
+CSS块允许你输入[` CSS 样式 `](https://developer.mozilla.org/en-US/docs/Web/CSS) 来改变`报表`的外观。当你改变你的`css`块时，与之对应的`Markdown`这样的块会被立即`计算`。
 
-### Fetch chunks (`%% fetch`)
+### Fetch块 (`%% fetch`)
 
-Fetch chunks provide a convenient way to load (i.e. to "fetch") external resources into the Iodide environment. For the time being, we support the loading:
-* Browserified JavaScript libraries (npm modules are not supported)
-* Style sheets
-* Data (from JSON, text, or blobs)
+Fetch块提供了一种便利的方法（如：`fetch`）向`Iodide`环境中加载外部的资源。目前，支持如下的加载：
 
-Each line in a fetch cell must specify:
-1. the "fetch type", one of `js`, `css`, `json`, `text` or `blob`,
-2. the url from which the resource will be fetched
+* JavaScript库(不支持npm模块库)
+* 样式文件
+* 数据 (如： JSON, text, 或 blobs)
 
-Additionally, data fetches (`json`, `text` or `blob`) must specify the variable name into which the data will be stored.
+在每个fetch`cell`前要加上如下内容:
 
-This example demonstrates how a fetch chunk is used.
+1. `fetch type`, 如： `js`, `css`, `json`, `text` 或 `blob`,
+2. 将要被获取的资源的`url`。
+
+而获取如：`json`, `text` 或 `blob`这样的数据，一定要指定存储数据的变量名。
+
+下面是一个`fetch`模块的示例：
 
 ```
 %% fetch
@@ -131,34 +125,34 @@ text: csvDataString = https://www.exmpl.co/a_csv_file.csv
 json: jsonData = https://www.exmpl.co/a_json_file.json
 blob: blobData = https://www.exmpl.co/a_binary_blob.arrow
 ```
+所有被请求的资源都是并行(异步)下载的，但是如果要对多个计算值进行排队，则在所有资源可用之前不会对下面的块进行计算。这允许你在同步的工作流中管理资源的检索，而不必处理`Web api`的异步特性(当然，如果需要额外的控制，你可以使用JavaScript代码和这些api来管理这种复杂性)。
 
-All of the requested resources are downloaded in parallel (asynchronously), but if several evaluations are queued, following chunks will not be evaluated until all the resources are available. This allows you to manage the retrieval of assets in a more synchronous workflow, without having to deal with the asynchronous nature of Web APIs (of course, you are free to manage that complexity with JavaScript code and using those APIs if you need that extra control).
+如果是`js`和`css`类型，那么脚本和样式表一旦可用，就会立即被添加到环境中。
 
-In the case of the `js` and `css` fetch types, the scripts and stylesheets are added to the environment as soon as they are available.
+其它遵循 `{TYPE}: {VAR_NAME} = {RESOURCE_URL}`语法的类型，数据被加载到JavaScript作用域中的变量` VAR_NAME `中。在`json`获取的情况下，从URL检索的json对象被解析为原生JavaScript对象，但是在`text`和`blob`获取的情况下，变量将分别包含一个原始字符串或[blob对象](https://developer.mozilla.org/en-US/docs/Web/API/Blob)。
 
-In the case of data fetches, which have the syntax `{TYPE}: {VAR_NAME} = {RESOURCE_URL}`, the data is loaded into the variable `VAR_NAME` within your JavaScript scope. In the case of a `json` fetch, the JSON object retrieved from the URL is parsed into a native JavaScript object, but in the case of `text` and `blob` fetches, the variable will contain a raw string or [blob object](https://developer.mozilla.org/en-US/docs/Web/API/Blob), respectively.
 
 ### Pyodide (`%% py`)
 
-Pyodide chunks allow you to execute Python 3 code in your browser by way of [Pyodide](https://github.com/iodide-project/pyodide), the Python interpreter compiled to WebAssembly.
+Pyodide块使用[Pyodide](https://github.com/iodide-project/pyodide)，从而允许你使用`Python 3`的语法，Python的解释器会将该模块的代码解析成为WebAssembly来供浏览器使用。
 
-_Note: the first time you evaluate a `py` chunk, python must be downloaded and initialized, which will take a few moments. Subsequent evaluations will happen immediately._
+注：当你第一次`计算` `py` 块时，python一定要被下载和初始化，这样会花费一些时间。而后续的`py`块会被立即`计算`。
 
-Pyodide is implemented as an Iodide [language plugin](language_plugins.md).
+Pyodide被当作一个`Iodide`的[`语言插件`](language_plugins.md)实现了。
 
 ### Plugins (`%% plugin`)
 
-Plugin chunks allow you to extend the functionality of Iodide by loading plugins. At the time being, Iodide only supports [language plugins](language_plugins.md), which add interpreters for additional languages to your Iodide session.
+插件模块允许你引入插件来扩展`Iodide`的功能。目前，`Iodide`仅支持[` 语言插件 `](language_plugins.md), 它会为`Iodide 会话`添加其它语言的解释器。
 
-Plugin chunks must contain a single JSON string that contains the plugin specification. The JSON must contain a "type" field (which for now must be "language")
+插件`块`必须包含一个包含插件规范的JSON字符串。JSON必须包含一个`type`字段(目前必须是`language`)。
 
-## Chunk Modifier flags
+## 块的修饰符
 
-Chunks delimiters can have one or more flags that modify their behavior. If a modifier flag is included, the chunk delimiter must include an explicit chunk type.
+`块`的`修饰符`可以是一个也可以是多个，如果一个`修饰符`被包含在分隔符中，那么这个`分隔符`一定要包含`类型符`。
 
 ### `skipRunAll`
 
-For the time being, the only flag available is `skipRunAll`, which will prevent the chunk from being run when you press the "Run Full Notebook" button or when the notebook is loaded in report view (which triggers a evaluation of the whole notebook).
+目前，惟一可用的标志是`skipRunAll`。
 
-This is useful for workflows in which you write and run a computationally expensive code during your exploratory investigation, but you don't want that code to run automatically when a reader visits your notebook in report view. For example the top portion of your notebook might load and process data, upload a smaller intermediate dataset to the server, and then download only that small dataset to be displayed immediately in the report view. This workflow allows you to create a report that loads quickly for you readers, while preserving your exploratory code in place in your notebook.
+这对于你在探索性研究期间，编写和运行计算开销较大的代码执行工作流来说非常有用。但是你不希望，当读者在报表视图中访问你的记事本时自动运行这些代码。例如，笔记本的顶部可能加载和处理数据，将较小的中间数据集上载到服务器，然后只下载要立即显示在报表视图中的小数据集。这个工作流程允许你创建一个`报表`，为你的读者快速加载，同时将你的探索性代码保存在你的笔记本中。
 
